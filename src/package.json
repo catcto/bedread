@@ -1,0 +1,28 @@
+{
+    "name": "bedread",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "start": "node app.js"
+    },
+    "dependencies": {
+        "request": "*",
+        "async":"*",
+        "bufferhelper":"*",
+        "iconv-lite":"*",
+        "rssparser2":"*",
+        "nedb":"*"
+    },
+    "main": "index.htm",
+	"window": {
+        "icon": "images/icon.png",
+        "show": true,
+        "position": "center",
+        "frame": false,
+		"toolbar": false,
+		"width": 833,
+		"height": 521,
+        "min_width": 600,
+        "min_height": 337
+	}
+}

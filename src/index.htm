@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>bedread</title>
+    <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.10.4.custom.min.css"/>
+    <link rel="stylesheet" type="text/css" href="uikit-2.4.0/css/uikit.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+</head>
+<body>
+    <div id="fullmsg">initializing...</div>
+	<div class="titlebar">
+		<div class="logo"></div>
+		<span>bedread - <i>v0.1.1</i></span>
+		<div id="close"></div>
+	</div>
+	<div class="bottombar"></div>
+	<div class="wrap">
+		<div class="feed">
+            <div class="loading"></div>
+			<div class="cl">
+			<button id="btnaddfeed" class="uk-button uk-width-1-2 fl fs14"><i class="uk-icon-plus"></i> Add</button>
+			<button class="uk-button uk-width-1-2 fl fs14"><i class="uk-icon-refresh"></i> Update</button>
+			</div>
+			<div class="cl">
+            <div class="feedmain">
+			</div>
+			</div>
+		</div>
+		<div class="list">
+        <div class="loading" style="display: none"></div>
+        <div id="rsslist"></div>
+        </div>
+		<div class="main">
+        <div id="maincontent"></div>
+        </div>
+	</div>
+	<div id="add_feed" class="uk-modal">
+    <div class="uk-modal-dialog">
+        <a class="uk-modal-close uk-close"></a>
+        <form class="uk-form">
+        <fieldset>
+        <legend>Add feed</legend>
+        <div id="add_feed1">
+        			<div class="uk-form-row">
+                        <label class="uk-form-label" for="add_feedurl">Enter the RSS feed URL here</label>
+                        <div class="uk-form-controls">
+                            <input class="uk-width-1-1 uk-form-large"  type="text" id="add_feedurl" v="isFilled;isUrl" alert="feed URL error">
+                        </div>
+                    </div>
+                    <div class="uk-form-row">
+                        <div class="uk-form-controls">
+                            <input type="checkbox" id="add_feedauto" checked="true"> <label for="add_feedauto">Auto feed</label>
+                        </div>
+                    </div>
+                    <div class="uk-form-row">
+                        <input type="submit" id="add_feednext" class="uk-width-1-1 uk-button uk-button-primary uk-button-large" value="Next">
+                    </div>
+        </div>
+        <div id="add_feed2">
+                    <div class="uk-form-row">
+                        <label class="uk-form-label" for="add_feedname">Feed name</label>
+                        <div class="uk-form-controls">
+                            <input class="uk-width-1-1 uk-form-large"  type="text" id="add_feedname" v="isFilled" alert="feed name error">
+                        </div>
+                    </div>
+                    <div class="uk-form-row">
+                        <label class="uk-form-label" for="add_feedgroup">Feed group</label>
+                        <div class="uk-form-controls">
+                            <select id="add_feedgroup"></select>
+                        </div>
+                    </div>
+                    <div class="uk-form-row">
+                        <input type="submit" id="add_feeddone" class="uk-width-1-1 uk-button uk-button-primary uk-button-large" value="Done">
+                    </div>
+        </div>
+        </fieldset>
+        </form>
+    </div>
+</div>
+<script id="template_myfeed" type="text/html">
+<ul class="uk-nav uk-nav-side uk-nav-parent-icon" data-uk-nav="{multiple:true}">
+<% for (i = 0; i < data.length; i++) { %>
+<li class="uk-parent active">
+    <a href="#"><%=data[i].name%></a>
+    <ul class="uk-nav-sub">
+        <% for (j = 0; j < data[i].feed.length; j++) { %>
+            <li><a dbid="<%=data[i].feed[j]._id%>" class="feedmenu" href="javascript:void(0)" onclick="bedread.getList('<%=data[i].feed[j].url%>')"><%=data[i].feed[j].name%></a></li>
+        <% } %>
+    </ul>
+</li>
+<% } %>
+</ul>
+</script>
+<script id="template_group" type="text/html">
+<% for (i = 0; i < data.length; i++) { %>
+<option value="<%=data[i].groupId%>"><%=data[i].name%></option>
+<% } %>
+</script>
+<script id="template_rsslist" type="text/html">
+<ul>
+<% for (i = 0; i < data.length; i++) { %>
+<li>
+<a href="javascript:void(0)" onclick="bedread.getContent(<%=i%>)">
+    <div class="top">
+        <div class="title" title="<%=data[i].title%>"><%=data[i].title%></div>
+        <div class="date"><%=data[i].time_ago%></div>
+    </div>
+    <div class="des"><%=typeof(data[i].summary)=="string"?data[i].summary.replace(/<[^>]+>/g,""):""%></div>
+</a>
+</li>
+<% } %>
+</ul>
+</script>
+<script id="template_rsscontent" type="text/html">
+<div class="rsscontent">
+<h1><%=data.title%></h1>
+<div class="date"><%=data.published_at%></div>
+<div class="content"><%==typeof(data.summary)=="string"?data.summary:""%></div>
+<div class="more">View all：<br><a href="<%=data.url%>"><%=data.url%></a></div>
+</div>
+</script>
+<script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.10.4.custom.min.js"></script>
+<script type="text/javascript" src="uikit-2.4.0/js/uikit.js"></script>
+<script type="text/javascript" src="js/moment.min.js"></script>
+<script type="text/javascript" src="js/template.js"></script>
+<script type="text/javascript" src="js/bedread.js"></script>
+<script type="text/javascript" src="js/base.js"></script>
+<script type="text/javascript">
+    $(function(){
+        bedread.init();
+    });
+</script>
+</body>
+</html>
